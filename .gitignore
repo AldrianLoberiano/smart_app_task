@@ -1,0 +1,63 @@
+# Root .gitignore for Smart Appointment & Task Management System
+
+## Sensitive Files and Configurations
+*.env
+.env
+.env.*
+!.env.example
+
+## Configuration files with sensitive data
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+!appsettings.Example.json
+
+## Secrets and Keys
+**/secrets.json
+**/*.key
+**/*.pem
+**/*.pfx
+**/*.p12
+**/*.crt
+**/*.cer
+
+## Database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+## Logs
+logs/
+*.log
+log-*.txt
+
+## User-specific files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+.DS_Store
+
+## Build outputs
+**/bin/
+**/obj/
+**/dist/
+**/build/
+**/Debug/
+**/Release/
+
+## Dependencies
+**/node_modules/
+**/packages/
+*.nupkg
+
+## Temporary files
+*.tmp
+*.temp
+*.cache
