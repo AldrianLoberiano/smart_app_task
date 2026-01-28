@@ -392,7 +392,7 @@ npm test
 
 ## License
 
-MIT License - feel free to use this project for learning and development.
+This project is for my personal project only.
 
 ## Support
 
