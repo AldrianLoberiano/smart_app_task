@@ -167,42 +167,42 @@ const AdminDashboard: React.FC = () => {
     {
       title: 'Total Appointments',
       value: stats.totalAppointments,
-      icon: <EventIcon fontSize="large" />,
+      icon: <EventIcon sx={{ fontSize: 40 }} />,
       color: '#1976d2',
       trend: `${stats.scheduledAppointments} scheduled`,
     },
     {
       title: 'Total Users',
       value: stats.totalUsers,
-      icon: <PeopleIcon fontSize="large" />,
+      icon: <PeopleIcon sx={{ fontSize: 40 }} />,
       color: '#2e7d32',
       trend: 'Active users',
     },
     {
       title: 'Total Tasks',
       value: stats.totalTasks,
-      icon: <TaskIcon fontSize="large" />,
+      icon: <TaskIcon sx={{ fontSize: 40 }} />,
       color: '#ed6c02',
       trend: `${stats.inProgressTasks} in progress`,
     },
     {
       title: 'Completed',
       value: stats.completedAppointments + stats.completedTasks,
-      icon: <CheckCircleIcon fontSize="large" />,
+      icon: <CheckCircleIcon sx={{ fontSize: 40 }} />,
       color: '#2e7d32',
       trend: 'Total completed items',
     },
     {
       title: 'Overdue Items',
       value: stats.overdueAppointments + stats.overdueTasks,
-      icon: <AssignmentLateIcon fontSize="large" />,
+      icon: <AssignmentLateIcon sx={{ fontSize: 40 }} />,
       color: '#d32f2f',
       trend: 'Requires attention',
     },
     {
       title: 'Pending Review',
       value: stats.scheduledAppointments,
-      icon: <PendingActionsIcon fontSize="large" />,
+      icon: <PendingActionsIcon sx={{ fontSize: 40 }} />,
       color: '#ed6c02',
       trend: 'Awaiting approval',
     },
@@ -222,10 +222,15 @@ const AdminDashboard: React.FC = () => {
     <Layout>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom fontWeight="600">
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            gutterBottom 
+            fontWeight="700"
+          >
             Admin Analytics Dashboard
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
             Overview of appointments, tasks, and user activity
           </Typography>
         </Box>
@@ -237,23 +242,75 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {/* Statistics Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
           {statCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-              <Card sx={{ height: '100%' }}>
+              <Card 
+                sx={{ 
+                  height: '100%',
+                  bgcolor: card.color,
+                  color: '#fff',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 12px 24px rgba(0,0,0,0.15)',
+                  },
+                }}
+              >
                 <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar sx={{ bgcolor: card.color, width: 48, height: 48 }}>
-                      {card.icon}
-                    </Avatar>
-                    <Box flexGrow={1}>
-                      <Typography variant="h4" component="div" fontWeight="600">
+                  <Box display="flex" flexDirection="column" gap={1.5}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Avatar 
+                        sx={{ 
+                          bgcolor: 'rgba(255,255,255,0.25)', 
+                          width: 56, 
+                          height: 56,
+                        }}
+                      >
+                        {card.icon}
+                      </Avatar>
+                      <Box 
+                        sx={{ 
+                          bgcolor: 'rgba(255,255,255,0.25)',
+                          borderRadius: '12px',
+                          px: 1.5,
+                          py: 0.5,
+                        }}
+                      >
+                        <Typography variant="caption" fontWeight="600">
+                          {index === statCards.length - 1 ? 'NEW' : 'LIVE'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    
+                    <Box>
+                      <Typography 
+                        variant="h3" 
+                        component="div" 
+                        fontWeight="700"
+                        sx={{ mb: 0.5 }}
+                      >
                         {card.value}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" noWrap>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontWeight: 500,
+                          mb: 0.5,
+                        }}
+                      >
                         {card.title}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                        }}
+                      >
                         {card.trend}
                       </Typography>
                     </Box>
@@ -317,22 +374,7 @@ const AdminDashboard: React.FC = () => {
                       </ListItemAvatar>
                       <ListItemText
                         primary={user.username}
-                        secondary={
-                          <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
-                            <Chip 
-                              label={`${user.totalAppointments} apt`} 
-                              size="small" 
-                              color="primary" 
-                              variant="outlined" 
-                            />
-                            <Chip 
-                              label={`${user.totalTasks} tasks`} 
-                              size="small" 
-                              color="secondary" 
-                              variant="outlined" 
-                            />
-                          </Stack>
-                        }
+                        secondary={`Last active: ${format(new Date(user.lastActive), 'MMM dd, yyyy')}`}
                       />
                     </ListItem>
                     {index < topUsers.length - 1 && <Divider variant="inset" component="li" />}

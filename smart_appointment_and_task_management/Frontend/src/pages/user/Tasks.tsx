@@ -26,7 +26,6 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 
 const Tasks: React.FC = () => {
@@ -117,10 +116,6 @@ const Tasks: React.FC = () => {
     } catch (err) {
       throw err;
     }
-  };
-
-  const handleExport = () => {
-    taskService.exportToCsv(filteredTasks);
   };
 
   // Filter and search logic
@@ -393,18 +388,6 @@ const Tasks: React.FC = () => {
                     <MenuItem value="week">Due This Week</MenuItem>
                     <MenuItem value="no-date">No Due Date</MenuItem>
                   </TextField>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={2}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={<FileDownloadIcon />}
-                    onClick={handleExport}
-                    disabled={filteredTasks.length === 0}
-                  >
-                    Export CSV
-                  </Button>
                 </Grid>
               </Grid>
             </Paper>

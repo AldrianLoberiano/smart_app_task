@@ -39,6 +39,19 @@ export const appointmentService = {
   },
 
   /**
+   * Check for scheduling conflicts
+   */
+  checkConflicts: async (startDateTime: string, endDateTime: string, excludeId?: number): Promise<Appointment[]> => {
+    const params = new URLSearchParams();
+    params.append('startDateTime', startDateTime);
+    params.append('endDateTime', endDateTime);
+    if (excludeId) params.append('excludeId', excludeId.toString());
+    
+    const response = await api.get<Appointment[]>(`/appointments/conflicts?${params.toString()}`);
+    return response.data;
+  },
+
+  /**
    * Create new appointment
    */
   create: async (data: CreateAppointmentRequest): Promise<Appointment> => {
@@ -75,36 +88,5 @@ export const appointmentService = {
   complete: async (id: number): Promise<Appointment> => {
     const appointment = await appointmentService.getById(id);
     return appointmentService.update(id, { ...appointment, status: 'Completed' });
-  },
-
-  /**
-   * Export appointments to CSV
-   */
-  exportToCsv: (appointments: Appointment[]): void => {
-    const headers = ['Title', 'Description', 'Start Date/Time', 'End Date/Time', 'Location', 'Status', 'Created At'];
-    const rows = appointments.map(apt => [
-      apt.title,
-      apt.description || '',
-      apt.startDateTime,
-      apt.endDateTime,
-      apt.location || '',
-      apt.status,
-      apt.createdAt,
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `appointments_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   },
 };

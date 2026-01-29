@@ -73,37 +73,4 @@ export const taskService = {
   delete: async (id: number): Promise<void> => {
     await api.delete(`/tasks/${id}`);
   },
-
-  /**
-   * Export tasks to CSV
-   */
-  exportToCsv: (tasks: Task[]): void => {
-    const headers = ['Title', 'Description', 'Priority', 'Status', 'Due Date', 'Created At', 'Completed'];
-    const rows = tasks.map(task => [
-      task.title,
-      task.description || '',
-      task.priority,
-      task.status,
-      task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd HH:mm') : 'No due date',
-      format(new Date(task.createdAt), 'yyyy-MM-dd HH:mm'),
-      task.isCompleted ? 'Yes' : 'No',
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute('href', url);
-    link.setAttribute('download', `tasks_${format(new Date(), 'yyyy-MM-dd_HHmm')}.csv`);
-    link.style.visibility = 'hidden';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  },
 };

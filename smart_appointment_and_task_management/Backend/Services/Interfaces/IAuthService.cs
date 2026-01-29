@@ -10,4 +10,5 @@ public interface IAuthService
     Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto);
     Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
     Task<UserProfileDto> GetUserProfileAsync(int userId);
+    Task<UserProfileDto> UpdateProfileAsync(int userId, UpdateProfileDto updateProfileDto);
 }

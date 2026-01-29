@@ -19,8 +19,6 @@ export interface AdminStats {
 export interface UserActivity {
   userId: number;
   username: string;
-  totalAppointments: number;
-  totalTasks: number;
   lastActive: string;
 }
 
@@ -120,13 +118,10 @@ export const adminService = {
         userMap.set(apt.userId, {
           userId: apt.userId,
           username: apt.username,
-          totalAppointments: 0,
-          totalTasks: 0,
           lastActive: apt.createdAt,
         });
       }
       const user = userMap.get(apt.userId)!;
-      user.totalAppointments++;
       if (new Date(apt.createdAt) > new Date(user.lastActive)) {
         user.lastActive = apt.createdAt;
       }
@@ -137,13 +132,10 @@ export const adminService = {
         userMap.set(task.userId, {
           userId: task.userId,
           username: task.username,
-          totalAppointments: 0,
-          totalTasks: 0,
           lastActive: task.createdAt,
         });
       }
       const user = userMap.get(task.userId)!;
-      user.totalTasks++;
       if (new Date(task.createdAt) > new Date(user.lastActive)) {
         user.lastActive = task.createdAt;
       }

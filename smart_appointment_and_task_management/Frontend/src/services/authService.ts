@@ -1,6 +1,13 @@
 import api from './api';
 import type { LoginRequest, RegisterRequest, AuthResponse, User } from '../types';
 
+export interface UpdateProfileDto {
+  username: string;
+  email: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
 export const authService = {
   /**
    * Register a new user
@@ -23,6 +30,14 @@ export const authService = {
    */
   getProfile: async (): Promise<User> => {
     const response = await api.get<User>('/auth/profile');
+    return response.data;
+  },
+
+  /**
+   * Update current user profile
+   */
+  updateProfile: async (data: UpdateProfileDto): Promise<User> => {
+    const response = await api.put<User>('/auth/profile', data);
     return response.data;
   },
 

@@ -16,13 +16,13 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
-    
+
     public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
         _logger = logger;
     }
-    
+
     /// <summary>
     /// Register a new user
     /// </summary>
@@ -37,11 +37,11 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
+
         var response = await _authService.RegisterAsync(registerDto);
         return CreatedAtAction(nameof(GetProfile), new { }, response);
     }
-    
+
     /// <summary>
     /// Login user
     /// </summary>
@@ -56,11 +56,11 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
+
         var response = await _authService.LoginAsync(loginDto);
         return Ok(response);
     }
-    
+
     /// <summary>
     /// Get current user profile
     /// </summary>
@@ -75,16 +75,38 @@ public class AuthController : ControllerBase
         var profile = await _authService.GetUserProfileAsync(userId);
         return Ok(profile);
     }
-    
+
+    /// <summary>
+    /// Update current user profile
+    /// </summary>
+    /// <param name="updateProfileDto">Updated profile details</param>
+    /// <returns>Updated user profile information</returns>
+    [HttpPut("profile")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto updateProfileDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var userId = GetUserIdFromClaims();
+        var profile = await _authService.UpdateProfileAsync(userId, updateProfileDto);
+        return Ok(profile);
+    }
+
     private int GetUserIdFromClaims()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
         {
             throw new UnauthorizedAccessException("Invalid user token");
         }
-        
+
         return userId;
     }
 }

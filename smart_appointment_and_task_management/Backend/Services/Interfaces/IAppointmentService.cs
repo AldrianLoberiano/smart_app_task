@@ -11,6 +11,7 @@ public interface IAppointmentService
     Task<IEnumerable<AppointmentDto>> GetAllByUserAsync(int userId);
     Task<IEnumerable<AppointmentDto>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, int userId);
     Task<IEnumerable<AppointmentDto>> GetByStatusAsync(string status, int userId);
+    Task<IEnumerable<AppointmentDto>> GetConflictingAppointmentsAsync(DateTime startDateTime, DateTime endDateTime, int userId, int? excludeId = null);
     Task<AppointmentDto> CreateAsync(CreateAppointmentDto createDto, int userId);
     Task<AppointmentDto> UpdateAsync(int id, UpdateAppointmentDto updateDto, int userId);
     Task DeleteAsync(int id, int userId);

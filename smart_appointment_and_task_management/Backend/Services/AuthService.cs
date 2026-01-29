@@ -16,9 +16,9 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly JwtHelper _jwtHelper;
     private readonly ILogger<AuthService> _logger;
-    
+
     public AuthService(
-        IUserRepository userRepository, 
+        IUserRepository userRepository,
         JwtHelper jwtHelper,
         ILogger<AuthService> logger)
     {
@@ -26,26 +26,26 @@ public class AuthService : IAuthService
         _jwtHelper = jwtHelper;
         _logger = logger;
     }
-    
+
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
     {
         _logger.LogInformation("Attempting to register user: {Username}", registerDto.Username);
-        
+
         // Check if username already exists
         if (await _userRepository.UsernameExistsAsync(registerDto.Username))
         {
             throw new InvalidOperationException("Username already exists");
         }
-        
+
         // Check if email already exists
         if (await _userRepository.EmailExistsAsync(registerDto.Email))
         {
             throw new InvalidOperationException("Email already exists");
         }
-        
+
         // Hash password using BCrypt
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
-        
+
         // Create user entity
         var user = new User
         {
@@ -56,16 +56,16 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        
+
         // Save to database
         var createdUser = await _userRepository.CreateAsync(user);
-        
+
         // Generate JWT token
         var token = _jwtHelper.GenerateToken(createdUser);
         var expiresAt = _jwtHelper.GetTokenExpiration();
-        
+
         _logger.LogInformation("User registered successfully: {Username}", createdUser.Username);
-        
+
         return new AuthResponseDto
         {
             Token = token,
@@ -75,31 +75,31 @@ public class AuthService : IAuthService
             ExpiresAt = expiresAt
         };
     }
-    
+
     public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
     {
         _logger.LogInformation("Attempting to login user: {UsernameOrEmail}", loginDto.UsernameOrEmail);
-        
+
         // Find user by username or email
         var user = await _userRepository.GetByUsernameOrEmailAsync(loginDto.UsernameOrEmail);
-        
+
         if (user == null)
         {
             throw new UnauthorizedAccessException("Invalid credentials");
         }
-        
+
         // Verify password
         if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
         {
             throw new UnauthorizedAccessException("Invalid credentials");
         }
-        
+
         // Generate JWT token
         var token = _jwtHelper.GenerateToken(user);
         var expiresAt = _jwtHelper.GetTokenExpiration();
-        
+
         _logger.LogInformation("User logged in successfully: {Username}", user.Username);
-        
+
         return new AuthResponseDto
         {
             Token = token,
@@ -109,16 +109,67 @@ public class AuthService : IAuthService
             ExpiresAt = expiresAt
         };
     }
-    
+
     public async Task<UserProfileDto> GetUserProfileAsync(int userId)
     {
         var user = await _userRepository.GetByIdAsync(userId);
-        
+
         if (user == null)
         {
             throw new KeyNotFoundException($"User with ID {userId} not found");
         }
-        
+
+        return new UserProfileDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role,
+            CreatedAt = user.CreatedAt
+        };
+    }
+
+    public async Task<UserProfileDto> UpdateProfileAsync(int userId, UpdateProfileDto updateProfileDto)
+    {
+        _logger.LogInformation("Attempting to update profile for user ID: {UserId}", userId);
+
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID {userId} not found");
+        }
+
+        // Check if new username is already taken by another user
+        if (user.Username != updateProfileDto.Username &&
+            await _userRepository.UsernameExistsAsync(updateProfileDto.Username))
+        {
+            throw new InvalidOperationException("Username already exists");
+        }
+
+        // Check if new email is already taken by another user
+        if (user.Email != updateProfileDto.Email &&
+            await _userRepository.EmailExistsAsync(updateProfileDto.Email))
+        {
+            throw new InvalidOperationException("Email already exists");
+        }
+
+        // Update user details
+        user.Username = updateProfileDto.Username;
+        user.Email = updateProfileDto.Email;
+
+        // Update password if provided
+        if (!string.IsNullOrWhiteSpace(updateProfileDto.NewPassword))
+        {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updateProfileDto.NewPassword);
+        }
+
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateAsync(user);
+
+        _logger.LogInformation("Profile updated successfully for user: {Username}", user.Username);
+
         return new UserProfileDto
         {
             Id = user.Id,

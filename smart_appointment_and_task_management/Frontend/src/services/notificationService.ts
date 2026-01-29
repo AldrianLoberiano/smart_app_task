@@ -11,6 +11,14 @@ export interface Notification {
   priority: 'high' | 'medium' | 'low';
 }
 
+export interface NotificationPreferences {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  appointmentReminders: boolean;
+  taskReminders: boolean;
+  reminderTimeMinutes: number;
+}
+
 class NotificationService {
   private lastAppointmentIds: Set<number> = new Set();
   private lastTaskIds: Set<number> = new Set();
@@ -19,6 +27,74 @@ class NotificationService {
 
   setUserRole(role: string) {
     this.isAdmin = role === 'Admin';
+  }
+
+  async getPreferences(): Promise<NotificationPreferences> {
+    const response = await api.get<NotificationPreferences>('/notifications/preferences');
+    return response.data;
+  }
+
+  async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
+    const response = await api.put<NotificationPreferences>('/notifications/preferences', preferences);
+    return response.data;
+  }
+
+  async requestPushPermission(): Promise<boolean> {
+    if (!('Notification' in window)) {
+      console.warn('This browser does not support notifications');
+      return false;
+    }
+
+    if (Notification.permission === 'granted') {
+      return true;
+    }
+
+    if (Notification.permission !== 'denied') {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+
+    return false;
+  }
+
+  async subscribeToPush(): Promise<void> {
+    const permission = await this.requestPushPermission();
+    if (!permission) {
+      throw new Error('Push notification permission denied');
+    }
+
+    // In a real implementation, you would:
+    // 1. Register a service worker
+    // 2. Get push subscription from service worker
+    // 3. Send subscription to backend
+    
+    console.log('Push notifications enabled');
+  }
+
+  showBrowserNotification(title: string, options?: NotificationOptions): void {
+    if (Notification.permission === 'granted') {
+      new Notification(title, options);
+    }
+  }
+
+  showAppointmentReminder(title: string, dateTime: Date): void {
+    this.showBrowserNotification('Appointment Reminder', {
+      body: `${title}\n${dateTime.toLocaleString()}`,
+      icon: '/appointment-icon.png',
+      tag: 'appointment-reminder',
+    });
+  }
+
+  showTaskReminder(title: string, dueDate?: Date): void {
+    const body = dueDate 
+      ? `${title}\nDue: ${dueDate.toLocaleString()}`
+      : title;
+      
+    this.showBrowserNotification('Task Reminder', {
+      body,
+      icon: '/task-icon.png',
+      tag: 'task-reminder',
+    });
   }
 
   async getNotifications(): Promise<Notification[]> {

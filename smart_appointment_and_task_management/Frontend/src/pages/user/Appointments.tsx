@@ -30,7 +30,6 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -172,10 +171,6 @@ const Appointments: React.FC = () => {
     };
   }, [appointments]);
 
-  const handleExport = () => {
-    appointmentService.exportToCsv(filteredAppointments);
-  };
-
   const handleComplete = async (id: number) => {
     try {
       await appointmentService.complete(id);
@@ -203,23 +198,13 @@ const Appointments: React.FC = () => {
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4">Appointments</Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant="outlined"
-              startIcon={<FileDownloadIcon />}
-              onClick={handleExport}
-              disabled={filteredAppointments.length === 0}
-            >
-              Export
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreate}
-            >
-              New Appointment
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleCreate}
+          >
+            New Appointment
+          </Button>
         </Box>
 
         {error && (

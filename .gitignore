@@ -61,3 +61,13 @@ log-*.txt
 *.tmp
 *.temp
 *.cache
+
+## Documentation Guides (Generated)
+smart_appointment_and_task_management/TESTING_GUIDE.md
+smart_appointment_and_task_management/EMAIL_CONFIGURATION.md
+smart_appointment_and_task_management/PUSH_NOTIFICATIONS.md
+smart_appointment_and_task_management/NOTIFICATION_SETUP.md
+smart_appointment_and_task_management/NOTIFICATION_ARCHITECTURE.md
+smart_appointment_and_task_management/NEXT_STEPS_SUMMARY.md
+smart_appointment_and_task_management/QUICK_VISUAL_GUIDE.md
+smart_appointment_and_task_management/DOCUMENTATION_INDEX.md

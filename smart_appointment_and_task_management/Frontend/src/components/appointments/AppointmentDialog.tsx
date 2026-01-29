@@ -10,10 +10,13 @@ import {
   Alert,
   Box,
   Chip,
+  Typography,
 } from '@mui/material';
 import type { Appointment, CreateAppointmentRequest, UpdateAppointmentRequest } from '../../types';
 import { getErrorMessage } from '../../services/api';
+import { appointmentService } from '../../services/appointmentService';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WarningIcon from '@mui/icons-material/Warning';
 
 interface AppointmentDialogProps {
   open: boolean;
@@ -40,6 +43,8 @@ const AppointmentDialog: React.FC<AppointmentDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [duration, setDuration] = useState<string>('');
+  const [conflicts, setConflicts] = useState<Appointment[]>([]);
+  const [checkingConflicts, setCheckingConflicts] = useState(false);
 
   useEffect(() => {
     if (appointment) {
@@ -79,11 +84,19 @@ const AppointmentDialog: React.FC<AppointmentDialogProps> = ({
     }
   };
 
-  // Calculate duration when dates change
+  // Calculate duration and check conflicts when dates change
   useEffect(() => {
     if (formData.startDateTime && formData.endDateTime) {
       const start = new Date(formData.startDateTime);
       const end = new Date(formData.endDateTime);
+      
+      // Validate dates are valid
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        setDuration('');
+        setConflicts([]);
+        return;
+      }
+      
       const diffMs = end.getTime() - start.getTime();
       
       if (diffMs > 0) {
@@ -96,13 +109,52 @@ const AppointmentDialog: React.FC<AppointmentDialogProps> = ({
         } else {
           setDuration(`${mins}m`);
         }
+
+        // Only check for conflicts if appointment is at least 15 minutes
+        if (diffMins >= 15) {
+          checkForConflicts(start, end);
+        } else {
+          setConflicts([]);
+        }
       } else {
         setDuration('');
+        setConflicts([]);
       }
     } else {
       setDuration('');
+      setConflicts([]);
     }
-  }, [formData.startDateTime, formData.endDateTime]);
+  }, [formData.startDateTime, formData.endDateTime, appointment?.id]);
+
+  const checkForConflicts = async (start: Date, end: Date) => {
+    // Don't check if dates are invalid
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      setConflicts([]);
+      return;
+    }
+
+    // Don't check if end is before start
+    if (end <= start) {
+      setConflicts([]);
+      return;
+    }
+
+    try {
+      setCheckingConflicts(true);
+      const conflictingAppointments = await appointmentService.checkConflicts(
+        start.toISOString(),
+        end.toISOString(),
+        appointment?.id
+      );
+      setConflicts(conflictingAppointments);
+    } catch (err) {
+      console.error('Error checking conflicts:', err);
+      // Don't show conflicts on error
+      setConflicts([]);
+    } finally {
+      setCheckingConflicts(false);
+    }
+  };
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -259,6 +311,47 @@ const AppointmentDialog: React.FC<AppointmentDialogProps> = ({
             </Box>
           )}
 
+          {/* Conflict Warning */}
+          {conflicts.length > 0 && (
+            <Alert 
+              severity="warning" 
+              icon={<WarningIcon />}
+              sx={{ mt: 2, mb: 2 }}
+            >
+              <Box>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  Scheduling Conflict Detected!
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  This time slot overlaps with {conflicts.length} existing appointment{conflicts.length > 1 ? 's' : ''}:
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  {conflicts.map((conflict, idx) => (
+                    <Box key={idx} sx={{ mt: 0.5 }}>
+                      <Typography variant="caption" display="block">
+                        • <strong>{conflict.title}</strong>
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                        {new Date(conflict.startDateTime).toLocaleString()} - {new Date(conflict.endDateTime).toLocaleTimeString()}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                  Please choose a different time slot to avoid double-booking.
+                </Typography>
+              </Box>
+            </Alert>
+          )}
+
+          {checkingConflicts && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Checking for conflicts...
+              </Typography>
+            </Box>
+          )}
+
           <TextField
             fullWidth
             label="Location"
@@ -290,8 +383,13 @@ const AppointmentDialog: React.FC<AppointmentDialogProps> = ({
 
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={loading}>
-            {loading ? 'Saving...' : 'Save'}
+          <Button 
+            type="submit" 
+            variant="contained" 
+            disabled={loading || conflicts.length > 0}
+            color={conflicts.length > 0 ? 'warning' : 'primary'}
+          >
+            {loading ? 'Saving...' : conflicts.length > 0 ? 'Resolve Conflicts First' : 'Save'}
           </Button>
         </DialogActions>
       </form>

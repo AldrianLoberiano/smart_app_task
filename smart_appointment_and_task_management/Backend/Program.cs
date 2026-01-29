@@ -40,6 +40,11 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Register background services
+builder.Services.AddHostedService<ReminderBackgroundService>();
 
 // Register helpers
 builder.Services.AddScoped<JwtHelper>();
@@ -66,7 +71,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
         ClockSkew = TimeSpan.Zero // Remove default 5 minute clock skew
     };
-    
+
     options.Events = new JwtBearerEvents
     {
         OnAuthenticationFailed = context =>
@@ -104,7 +109,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "RESTful API for managing appointments and tasks with JWT authentication"
     });
-    
+
     // Add JWT Authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -115,7 +120,7 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Description = "Enter 'Bearer' [space] and then your valid token"
     });
-    
+
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -165,10 +170,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        
+
         // Uncomment to automatically apply migrations on startup
         // context.Database.Migrate();
-        
+
         Log.Information("Database connection successful");
     }
     catch (Exception ex)

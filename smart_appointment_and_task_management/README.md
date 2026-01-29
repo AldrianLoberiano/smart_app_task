@@ -131,6 +131,15 @@ A full-stack web application for managing appointments and tasks with role-based
 - Due date reminders
 - Mark tasks as complete
 
+### **Notification System**
+
+- **Email Notifications**: HTML email reminders (console logging in dev, SMTP in production)
+- **Push Notifications**: Browser push notifications with service worker support
+- **Automated Reminders**: Background service checks every 5 minutes
+- **Customizable Settings**: Configure reminder time (default 30 minutes before)
+- **Multiple Channels**: Email + Push notifications for appointments and tasks
+- **User Preferences**: Per-user notification settings (enable/disable email, push, appointment, task reminders)
+
 ### **Additional Features**
 
 - Global error handling
@@ -138,6 +147,8 @@ A full-stack web application for managing appointments and tasks with role-based
 - Data validation (server & client)
 - Responsive UI design
 - Search and filter capabilities
+- Admin dashboard with user activity tracking
+- CSV export functionality (admin only)
 
 ## Project Structure
 
@@ -356,6 +367,37 @@ dotnet test
 cd Frontend
 npm test
 ```
+
+## Comprehensive Documentation
+
+### **Quick Start Guides**
+
+- **[QUICKSTART.md](QUICKSTART.md)** - Get up and running in 5 minutes
+- **[TUTORIAL.md](TUTORIAL.md)** - Step-by-step tutorial for beginners
+
+### **Feature Documentation**
+
+- **[TASK_FEATURES.md](TASK_FEATURES.md)** - Complete task management guide
+- **[Frontend/APPOINTMENT_FEATURES.md](Frontend/APPOINTMENT_FEATURES.md)** - Appointment system features
+- **[Frontend/ADMIN_FEATURES.md](Frontend/ADMIN_FEATURES.md)** - Admin dashboard capabilities
+- **[Frontend/USER_GUIDE.md](Frontend/USER_GUIDE.md)** - End-user guide
+
+### **Technical Documentation**
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design patterns
+- **[FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md)** - Project structure explanation
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - High-level project overview
+
+### **Setup & Configuration** ⚙️
+
+- **[EMAIL_CONFIGURATION.md](EMAIL_CONFIGURATION.md)** - Email notification setup (Gmail, SendGrid, AWS SES)
+- **[PUSH_NOTIFICATIONS.md](PUSH_NOTIFICATIONS.md)** - Service worker and push notification guide
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Comprehensive testing instructions for all features
+
+### **Quick References**
+
+- **[Frontend/QUICK_REFERENCE.md](Frontend/QUICK_REFERENCE.md)** - Frontend API quick reference
+- **[Frontend/ENHANCEMENT_SUMMARY.md](Frontend/ENHANCEMENT_SUMMARY.md)** - Recent feature additions
 
 ## Design Patterns Used
 
