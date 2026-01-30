@@ -13,6 +13,11 @@ appsettings.Production.json
 appsettings.Staging.json
 !appsettings.Example.json
 
+## Backend Configuration Files
+smart_appointment_and_task_management/Backend/appsettings.json
+smart_appointment_and_task_management/Backend/appsettings.Development.json
+smart_appointment_and_task_management/Backend/appsettings.Production.json
+
 ## Secrets and Keys
 **/secrets.json
 **/*.key
@@ -21,6 +26,8 @@ appsettings.Staging.json
 **/*.p12
 **/*.crt
 **/*.cer
+**/jwtsecret.txt
+**/connectionstrings.txt
 
 ## Database files
 *.db
@@ -30,11 +37,19 @@ appsettings.Staging.json
 *.sqlite3
 *.mdf
 *.ldf
+smartapp.db
+smartapp.db-shm
+smartapp.db-wal
+smart_appointment_and_task_management/Backend/*.db
+smart_appointment_and_task_management/Backend/*.db-shm
+smart_appointment_and_task_management/Backend/*.db-wal
 
 ## Logs
 logs/
 *.log
 log-*.txt
+smart_appointment_and_task_management/Backend/logs/
+smart_appointment_and_task_management/Backend/log-*.txt
 
 ## User-specific files
 .vscode/
@@ -51,23 +66,35 @@ log-*.txt
 **/build/
 **/Debug/
 **/Release/
+smart_appointment_and_task_management/Backend/bin/
+smart_appointment_and_task_management/Backend/obj/
+smart_appointment_and_task_management/Frontend/dist/
+smart_appointment_and_task_management/Frontend/build/
 
 ## Dependencies
 **/node_modules/
 **/packages/
 *.nupkg
 
+## NuGet and Package Restore
+**/project.assets.json
+**/project.fragment.lock.json
+**/*.nuget.props
+**/*.nuget.targets
+**/.nuget/
+
 ## Temporary files
 *.tmp
 *.temp
 *.cache
+*.swp
+*~
+.DS_Store
+Thumbs.db
 
-## Documentation Guides (Generated)
-smart_appointment_and_task_management/TESTING_GUIDE.md
-smart_appointment_and_task_management/EMAIL_CONFIGURATION.md
-smart_appointment_and_task_management/PUSH_NOTIFICATIONS.md
-smart_appointment_and_task_management/NOTIFICATION_SETUP.md
-smart_appointment_and_task_management/NOTIFICATION_ARCHITECTURE.md
-smart_appointment_and_task_management/NEXT_STEPS_SUMMARY.md
-smart_appointment_and_task_management/QUICK_VISUAL_GUIDE.md
-smart_appointment_and_task_management/DOCUMENTATION_INDEX.md
+## Documentation Files (All Markdown)
+*.md
+
+## Postman Setup Files (Generated)
+smart_appointment_and_task_management/Postman_Collection.json
+smart_appointment_and_task_management/Postman_Environment.json

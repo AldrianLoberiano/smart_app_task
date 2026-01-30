@@ -277,7 +277,7 @@ class NotificationService {
     return false;
   }
   
-  async showBrowserNotification(notification: Notification): Promise<void> {
+  async showNotification(notification: Notification): Promise<void> {
     const hasPermission = await this.requestPermission();
     
     if (hasPermission) {

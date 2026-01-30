@@ -32,7 +32,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
 
 const Profile: React.FC = () => {
-  const { user: authUser, login } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
